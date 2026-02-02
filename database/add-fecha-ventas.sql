@@ -1,0 +1,4 @@
+-- Agregar columna fecha a ventas existentes
+-- Ejecutar en MySQL SOLO si tu BD ya existía y no tiene la columna fecha
+-- (TypeORM con synchronize la agrega automáticamente al reiniciar)
+-- ALTER TABLE ventas ADD COLUMN fecha DATETIME DEFAULT CURRENT_TIMESTAMP;

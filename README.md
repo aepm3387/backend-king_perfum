@@ -23,7 +23,27 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+API REST para el sistema de gestión de perfumería **King Perfum**, desarrollado con NestJS y arquitectura modular.
+
+### Estructura modular
+
+| Módulo | Ruta | Descripción |
+|--------|------|-------------|
+| Categorías | `/categorias` | Categorías de productos |
+| Clientes | `/clientes` | Gestión de clientes |
+| Abonos | `/abonos` | Abonos de clientes |
+| Productos | `/productos` | Catálogo |
+| Roles | `/roles` | Roles de usuario |
+| Tipos de Venta | `/tipos-de-venta` | Tipos de venta |
+| Usuarios | `/usuarios` | Usuarios |
+| Ventas | `/ventas` | Ventas con productos |
+| Productos de la Venta | `/productos-de-la-venta` | Detalle venta-producto |
+
+### Configuración
+
+1. Copiar `.env.example` a `.env`
+2. Configurar conexión MySQL
+3. Ejecutar `database/schema.sql` para crear la BD
 
 ## Project setup
 
