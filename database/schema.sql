@@ -35,6 +35,7 @@ CREATE TABLE productos (
     categoria_id    INT         NULL,
     precio_compra   INT         NOT NULL,
     genero          VARCHAR(10) NOT NULL,
+    cantidad        INT         NOT NULL DEFAULT 0,
     CONSTRAINT productos_ibfk_1 FOREIGN KEY (categoria_id) REFERENCES categoria (id)
 );
 CREATE INDEX idx_productos_categoria ON productos (categoria_id);

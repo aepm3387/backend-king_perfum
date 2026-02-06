@@ -18,6 +18,7 @@ export class ProductosService {
       precioDeVenta: createProductoDto.precio_de_venta,
       precioCompra: createProductoDto.precio_compra,
       genero: createProductoDto.genero,
+      cantidad: createProductoDto.cantidad ?? 0,
       categoriaId: createProductoDto.categoria_id ?? null,
     });
     return this.productoRepository.save(producto);
@@ -48,6 +49,7 @@ export class ProductosService {
     if (updateProductoDto.precio_de_venta !== undefined) updateData.precioDeVenta = updateProductoDto.precio_de_venta;
     if (updateProductoDto.precio_compra !== undefined) updateData.precioCompra = updateProductoDto.precio_compra;
     if (updateProductoDto.genero !== undefined) updateData.genero = updateProductoDto.genero;
+    if (updateProductoDto.cantidad !== undefined) updateData.cantidad = updateProductoDto.cantidad;
     if (updateProductoDto.categoria_id !== undefined) updateData.categoriaId = updateProductoDto.categoria_id;
     await this.productoRepository.update(id, updateData);
     return this.findOne(id);

@@ -21,5 +21,9 @@ export class UpdateProductoDto {
 
   @IsOptional()
   @IsInt()
+  cantidad?: number;
+
+  @IsOptional()
+  @IsInt()
   categoria_id?: number;
 }

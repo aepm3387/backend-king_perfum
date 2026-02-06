@@ -32,7 +32,8 @@ CREATE TABLE IF NOT EXISTS productos (
     precio_de_venta INT         NOT NULL,
     categoria_id    INT         NULL REFERENCES categoria (id),
     precio_compra   INT         NOT NULL,
-    genero          VARCHAR(10) NOT NULL
+    genero          VARCHAR(10) NOT NULL,
+    cantidad        INT         NOT NULL DEFAULT 0
 );
 CREATE INDEX IF NOT EXISTS idx_productos_categoria ON productos (categoria_id);
 

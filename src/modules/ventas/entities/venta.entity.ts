@@ -16,7 +16,7 @@ export class Venta {
   id: number;
 
   @Column({
-    type: 'timestamp',
+    type: 'datetime',
     name: 'fecha',
     default: () => 'CURRENT_TIMESTAMP',
   })

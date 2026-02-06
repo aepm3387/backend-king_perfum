@@ -17,5 +17,9 @@ export class CreateProductoDto {
 
   @IsOptional()
   @IsInt()
+  cantidad?: number;
+
+  @IsOptional()
+  @IsInt()
   categoria_id?: number;
 }

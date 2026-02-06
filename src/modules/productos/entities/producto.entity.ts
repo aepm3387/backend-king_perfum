@@ -26,6 +26,9 @@ export class Producto {
   @Column({ type: 'varchar', length: 10 })
   genero: string;
 
+  @Column({ type: 'int', default: 0 })
+  cantidad: number;
+
   @Column({ type: 'int', name: 'categoria_id', nullable: true })
   categoriaId: number | null;
 
