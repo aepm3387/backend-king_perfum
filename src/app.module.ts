@@ -10,6 +10,7 @@ import { AbonosModule } from './modules/abonos/abonos.module';
 import { ProductosModule } from './modules/productos/productos.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { TipoDeVentaModule } from './modules/tipo-de-venta/tipo-de-venta.module';
+import { TipoDePagoModule } from './modules/tipo-de-pago/tipo-de-pago.module';
 import { UsuariosModule } from './modules/usuarios/usuarios.module';
 import { VentasModule } from './modules/ventas/ventas.module';
 import { ProductoDeLaVentaModule } from './modules/producto-de-la-venta/producto-de-la-venta.module';
@@ -34,6 +35,7 @@ import { ProductoDeLaVentaModule } from './modules/producto-de-la-venta/producto
     ProductosModule,
     RolesModule,
     TipoDeVentaModule,
+    TipoDePagoModule,
     UsuariosModule,
     VentasModule,
     ProductoDeLaVentaModule,

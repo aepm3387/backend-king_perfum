@@ -49,6 +49,12 @@ CREATE TABLE IF NOT EXISTS tipo_de_venta (
     descripcion VARCHAR(200) NULL
 );
 
+-- Tabla tipos_de_pago
+CREATE TABLE IF NOT EXISTS tipos_de_pago (
+    id    SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL
+);
+
 -- Tabla usuarios
 CREATE TABLE IF NOT EXISTS usuarios (
     id              SERIAL PRIMARY KEY,
@@ -65,9 +71,11 @@ CREATE TABLE IF NOT EXISTS ventas (
     fecha            TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     valor_total      INT NOT NULL,
     tipo_de_venta_id INT NOT NULL REFERENCES tipo_de_venta (id),
+    tipo_de_pago_id  INT NOT NULL REFERENCES tipos_de_pago (id),
     cliente_id       INT NOT NULL REFERENCES clientes (id)
 );
 CREATE INDEX IF NOT EXISTS idx_ventas_tipo ON ventas (tipo_de_venta_id);
+CREATE INDEX IF NOT EXISTS idx_ventas_tipo_pago ON ventas (tipo_de_pago_id);
 CREATE INDEX IF NOT EXISTS idx_ventas_cliente ON ventas (cliente_id);
 
 -- Tabla producto_de_la_venta

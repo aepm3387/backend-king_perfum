@@ -11,5 +11,8 @@ VALUES ('Administrador', 'admin', 'admin123', 1);
 -- Tipos de venta
 INSERT INTO tipo_de_venta (descripcion) VALUES ('Contado'), ('Crédito');
 
+-- Tipos de pago
+INSERT INTO tipos_de_pago (nombre) VALUES ('Efectivo'), ('Transferencia');
+
 -- Cliente genérico para ventas
 INSERT INTO clientes (nombre_completo, deuda) VALUES ('Cliente General', 0);

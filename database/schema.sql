@@ -52,6 +52,12 @@ CREATE TABLE tipo_de_venta (
     descripcion VARCHAR(200) NULL
 );
 
+-- Tabla tipos_de_pago
+CREATE TABLE tipos_de_pago (
+    id    INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL
+);
+
 -- Tabla usuarios
 CREATE TABLE usuarios (
     id              INT AUTO_INCREMENT PRIMARY KEY,
@@ -69,11 +75,14 @@ CREATE TABLE ventas (
     fecha            DATETIME DEFAULT CURRENT_TIMESTAMP,
     valor_total      INT NOT NULL,
     tipo_de_venta_id INT NOT NULL,
+    tipo_de_pago_id  INT NOT NULL,
     cliente_id       INT NOT NULL,
     CONSTRAINT ventas_ibfk_1 FOREIGN KEY (tipo_de_venta_id) REFERENCES tipo_de_venta (id),
-    CONSTRAINT ventas_ibfk_2 FOREIGN KEY (cliente_id) REFERENCES clientes (id)
+    CONSTRAINT ventas_ibfk_2 FOREIGN KEY (tipo_de_pago_id) REFERENCES tipos_de_pago (id),
+    CONSTRAINT ventas_ibfk_3 FOREIGN KEY (cliente_id) REFERENCES clientes (id)
 );
 CREATE INDEX idx_ventas_tipo ON ventas (tipo_de_venta_id);
+CREATE INDEX idx_ventas_tipo_pago ON ventas (tipo_de_pago_id);
 CREATE INDEX idx_ventas_cliente ON ventas (cliente_id);
 
 -- Tabla producto_de_la_venta
