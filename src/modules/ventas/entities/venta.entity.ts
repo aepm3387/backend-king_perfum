@@ -29,7 +29,7 @@ export class Venta {
   @Column({ type: 'int', name: 'tipo_de_venta_id' })
   tipoDeVentaId: number;
 
-  @Column({ type: 'int', name: 'tipo_de_pago_id' })
+  @Column({ type: 'int', name: 'tipo_de_pago_id', default: 1, nullable: true })
   tipoDePagoId: number;
 
   @Column({ type: 'int', name: 'cliente_id' })
