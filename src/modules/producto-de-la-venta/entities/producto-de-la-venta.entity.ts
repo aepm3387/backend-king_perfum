@@ -19,6 +19,13 @@ export class ProductoDeLaVenta {
   @Column({ type: 'int', name: 'producto_id' })
   productoId: number;
 
+  @Column({ type: 'int', default: 1 })
+  cantidad: number;
+
+  /** Precio unitario al momento de la venta. Si es null, se usa el precio del producto. */
+  @Column({ type: 'int', name: 'precio_unitario', nullable: true })
+  precioUnitario: number | null;
+
   @ManyToOne(() => Venta, (venta) => venta.productosDeLaVenta)
   @JoinColumn({ name: 'venta_id' })
   venta: Venta;

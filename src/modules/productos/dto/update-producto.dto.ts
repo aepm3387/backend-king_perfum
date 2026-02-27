@@ -1,4 +1,5 @@
-import { IsString, IsInt, IsOptional, MaxLength } from 'class-validator';
+import { IsString, IsInt, IsOptional, MaxLength, IsBoolean } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class UpdateProductoDto {
   @IsOptional()
@@ -26,4 +27,9 @@ export class UpdateProductoDto {
   @IsOptional()
   @IsInt()
   categoria_id?: number;
+
+  @IsOptional()
+  @Transform(({ value }) => (value === undefined ? undefined : value === true || value === 'true'))
+  @IsBoolean()
+  activo?: boolean;
 }

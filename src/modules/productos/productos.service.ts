@@ -19,13 +19,18 @@ export class ProductosService {
       precioCompra: createProductoDto.precio_compra,
       genero: createProductoDto.genero,
       cantidad: createProductoDto.cantidad ?? 0,
+      activo: true,
       categoriaId: createProductoDto.categoria_id ?? null,
     });
     return this.productoRepository.save(producto);
   }
 
+  /** Solo devuelve productos activos (para listados y ventas en el front). */
   async findAll(): Promise<Producto[]> {
-    return this.productoRepository.find({ relations: ['categoria'] });
+    return this.productoRepository.find({
+      where: { activo: true },
+      relations: ['categoria'],
+    });
   }
 
   async findOne(id: number): Promise<Producto> {
@@ -51,12 +56,14 @@ export class ProductosService {
     if (updateProductoDto.genero !== undefined) updateData.genero = updateProductoDto.genero;
     if (updateProductoDto.cantidad !== undefined) updateData.cantidad = updateProductoDto.cantidad;
     if (updateProductoDto.categoria_id !== undefined) updateData.categoriaId = updateProductoDto.categoria_id;
+    if (updateProductoDto.activo !== undefined) updateData.activo = updateProductoDto.activo;
     await this.productoRepository.update(id, updateData);
     return this.findOne(id);
   }
 
+  /** Deshabilita el producto (no lo elimina). Deja de aparecer en listados y en ventas. */
   async remove(id: number): Promise<void> {
     await this.findOne(id);
-    await this.productoRepository.delete(id);
+    await this.productoRepository.update(id, { activo: false });
   }
 }

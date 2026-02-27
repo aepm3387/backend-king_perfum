@@ -47,6 +47,9 @@ export class VentasService {
       if (!producto) {
         throw new BadRequestException(`Producto con id ${productoId} no encontrado`);
       }
+      if (producto.activo === false) {
+        throw new BadRequestException(`El producto "${producto.nombre}" está deshabilitado y no puede venderse`);
+      }
       const cantidadActual = producto.cantidad ?? 0;
       if (cantidadActual < cantidadVendida) {
         throw new BadRequestException(
@@ -73,49 +76,76 @@ export class VentasService {
   }
 
   async create(createVentaDto: CreateVentaDto): Promise<Venta> {
-    const productoIds = createVentaDto.producto_ids ?? [];
-    await this.descontarStock(productoIds);
+    const tipoVenta = await this.tipoDeVentaRepository.findOne({
+      where: { id: createVentaDto.tipo_de_venta_id },
+    });
+    const descripcionTipo = (tipoVenta?.descripcion ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const esCredito = descripcionTipo.includes('credito');
+    if (esCredito && (createVentaDto.cliente_id == null || createVentaDto.cliente_id === undefined)) {
+      throw new BadRequestException('Para venta a crédito debe seleccionar un cliente');
+    }
 
     const tipoDePagoId = createVentaDto.tipo_de_pago_id ?? 1;
+    const clienteId = createVentaDto.cliente_id ?? null;
+
+    let valorTotal: number;
+    let lineasParaGuardar: { productoId: number; cantidad: number; precioUnitario: number | null }[] = [];
+
+    if (createVentaDto.productos?.length) {
+      const productos = createVentaDto.productos;
+      const productoIds = productos.flatMap((p) => Array(p.cantidad).fill(p.producto_id));
+      await this.descontarStock(productoIds);
+
+      for (const item of productos) {
+        const producto = await this.productoRepository.findOne({ where: { id: item.producto_id } });
+        if (!producto) throw new BadRequestException(`Producto con id ${item.producto_id} no encontrado`);
+        const precioUnitario = item.precio_unitario ?? producto.precioDeVenta;
+        lineasParaGuardar.push({
+          productoId: item.producto_id,
+          cantidad: item.cantidad,
+          precioUnitario,
+        });
+      }
+      valorTotal = lineasParaGuardar.reduce(
+        (sum, l) => sum + l.cantidad * (l.precioUnitario ?? 0),
+        0,
+      );
+    } else {
+      const productoIds = createVentaDto.producto_ids ?? [];
+      await this.descontarStock(productoIds);
+      valorTotal = createVentaDto.valor_total;
+      for (const productoId of productoIds) {
+        lineasParaGuardar.push({ productoId, cantidad: 1, precioUnitario: null });
+      }
+    }
 
     const venta = this.ventaRepository.create({
-      valorTotal: createVentaDto.valor_total,
+      valorTotal,
       tipoDeVentaId: createVentaDto.tipo_de_venta_id,
       tipoDePagoId,
-      clienteId: createVentaDto.cliente_id,
+      clienteId,
     });
     const ventaGuardada = await this.ventaRepository.save(venta);
 
-    if (productoIds.length) {
-      const productosDeLaVenta = productoIds.map((productoId) =>
+    if (lineasParaGuardar.length) {
+      const productosDeLaVenta = lineasParaGuardar.map((l) =>
         this.productoDeLaVentaRepository.create({
           ventaId: ventaGuardada.id,
-          productoId,
+          productoId: l.productoId,
+          cantidad: l.cantidad,
+          precioUnitario: l.precioUnitario,
         }),
       );
       await this.productoDeLaVentaRepository.save(productosDeLaVenta);
     }
 
-    // Si es venta a crédito, sumar el total a la deuda del cliente
-    const tipoVenta = await this.tipoDeVentaRepository.findOne({
-      where: { id: createVentaDto.tipo_de_venta_id },
-    });
-    const descripcion = (tipoVenta?.descripcion ?? '')
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '');
-    const esCredito = descripcion.includes('credito');
-
-    if (esCredito) {
+    if (esCredito && clienteId != null) {
       const cliente = await this.clienteRepository.findOne({
-        where: { id: createVentaDto.cliente_id },
+        where: { id: clienteId },
       });
       if (cliente) {
-        const nuevaDeuda =
-          (cliente.deuda ?? 0) + createVentaDto.valor_total;
-        await this.clienteRepository.update(createVentaDto.cliente_id, {
-          deuda: nuevaDeuda,
-        });
+        const nuevaDeuda = (cliente.deuda ?? 0) + valorTotal;
+        await this.clienteRepository.update(clienteId, { deuda: nuevaDeuda });
       }
     }
 
@@ -144,7 +174,9 @@ export class VentasService {
 
     if (updateVentaDto.producto_ids !== undefined) {
       const idsAntiguos =
-        ventaActual.productosDeLaVenta?.map((pv) => pv.productoId) ?? [];
+        ventaActual.productosDeLaVenta?.flatMap((pv) =>
+          Array(pv.cantidad ?? 1).fill(pv.productoId),
+        ) ?? [];
       await this.restaurarStock(idsAntiguos);
       await this.descontarStock(updateVentaDto.producto_ids);
 
@@ -182,7 +214,9 @@ export class VentasService {
   async remove(id: number): Promise<void> {
     const venta = await this.findOne(id);
     const productoIds =
-      venta.productosDeLaVenta?.map((pv) => pv.productoId) ?? [];
+      venta.productosDeLaVenta?.flatMap((pv) =>
+        Array(pv.cantidad ?? 1).fill(pv.productoId),
+      ) ?? [];
     await this.restaurarStock(productoIds);
     await this.productoDeLaVentaRepository.delete({ ventaId: id });
     await this.ventaRepository.delete(id);

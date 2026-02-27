@@ -32,8 +32,8 @@ export class Venta {
   @Column({ type: 'int', name: 'tipo_de_pago_id', nullable: true })
   tipoDePagoId: number;
 
-  @Column({ type: 'int', name: 'cliente_id' })
-  clienteId: number;
+  @Column({ type: 'int', name: 'cliente_id', nullable: true })
+  clienteId: number | null;
 
   @ManyToOne(() => TipoDeVenta, (tipoDeVenta) => tipoDeVenta.ventas)
   @JoinColumn({ name: 'tipo_de_venta_id' })

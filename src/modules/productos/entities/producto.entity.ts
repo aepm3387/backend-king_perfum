@@ -29,6 +29,9 @@ export class Producto {
   @Column({ type: 'int', default: 0 })
   cantidad: number;
 
+  @Column({ type: 'boolean', default: true })
+  activo: boolean;
+
   @Column({ type: 'int', name: 'categoria_id', nullable: true })
   categoriaId: number | null;
 
